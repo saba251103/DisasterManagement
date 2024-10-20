@@ -121,7 +121,7 @@ const Newfile = () => {
         {/* Earthquake Data & Map */}
         <Grid item xs={12} md={6}>
           <Typography variant="h5" align="center">
-            Recent Earthquakes (Magnitude >= 2.5)
+            Recent Earthquakes (Magnitude greater than 2.5)
           </Typography>
 
           <MapContainer

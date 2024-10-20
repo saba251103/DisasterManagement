@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,42 +10,55 @@ import { Instagram } from '@mui/icons-material';
 import { X } from '@mui/icons-material';
 import { Facebook } from '@mui/icons-material';
 import { Search } from '@mui/icons-material';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import logo from './logo.png';
+import flood from './flood.jpg';
+import fire from './fire.png';
+import tornado from './tornado.png';
+import earthquake from './earthquake.jpg'
+import floodrescue from './floodrescue.png'
+import wildfire from './wildfire.png'
 import front from './home.png'; // Home image
 import about from './aboutus.png';
 import { useNavigate } from 'react-router-dom';
 import { Paper, Grid } from '@mui/material';
 import './App.css';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Newfile from './newfile';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
-// ImageList data with disaster-related images
+// ... res
 const itemData = [
   {
-    img: 'https://images.unsplash.com/photo-1601758123927-4a36c0e29d63',
+    img: flood,
     title: 'Flood',
     author: 'John Doe',
   },
   {
-    img: 'https://images.unsplash.com/photo-1588092317190-96f8e8a4c263',
+    img: earthquake,
     title: 'Earthquake Aftermath',
     author: 'Jane Smith',
   },
   {
-    img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914',
+    img: fire,
     title: 'Fire Response',
     author: 'Michael Johnson',
   },
   {
-    img: 'https://images.unsplash.com/photo-1559087316-36d9fb2d82e3',
+    img: tornado,
     title: 'Tornado',
     author: 'Linda Carter',
   },
   {
-    img: 'https://images.unsplash.com/photo-1501644898240-aaf0d3e76542',
+    img: floodrescue,
     title: 'Flood Rescue',
     author: 'Tom Smith',
   },
   {
-    img: 'https://images.unsplash.com/photo-1579705745864-8509c275b849',
+    img: wildfire,
     title: 'Wildfire',
     author: 'Alice Brown',
   },
@@ -52,7 +66,43 @@ const itemData = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const [windSpeed, setWindSpeed] = useState(0);
+  const windThreshold = 20; // Example threshold value, set it according to your logic
 
+  const speakAltText = () => {
+    const altText = "A modern disaster management platform interface showcasing real-time updates on natural disasters, emergency response tools, and community safety resources, designed to enhance preparedness and communication during crises."; // Replace with your alt text
+    const utterance = new SpeechSynthesisUtterance(altText);
+    window.speechSynthesis.speak(utterance);
+  };
+  const sendEarthquakeAlert = () => {
+    NotificationManager.warning(
+      'Earthquake Alert!',
+      'An earthquake has been detected in Mumbai. Please take necessary precautions.',
+      5000 // Notification duration (in milliseconds)
+    );
+  };
+  const checkWindSpeed = () => {
+    // Simulating wind speed change; replace this with real wind speed data fetching
+    const newWindSpeed = Math.floor(Math.random() * 30); // Random wind speed for simulation
+
+    setWindSpeed(newWindSpeed);
+    console.log('Current Wind Speed:', newWindSpeed);
+
+    if (newWindSpeed > windThreshold) {
+      NotificationManager.warning(
+        'Wind Alert!',
+        `Wind speed has increased to ${newWindSpeed} km/h. Please take necessary precautions.`,
+        5000 // Notification duration (in milliseconds)
+      );
+    }
+  };
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      checkWindSpeed();
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
   // Navigation Functions for external links
   const openInstagram = () => {
     window.open('https://www.instagram.com', '_blank');
@@ -134,8 +184,11 @@ export default function Home() {
             <IconButton size="large" edge="start" color="#c9c7b8" aria-label="menu" sx={{ mr: 4 ,backgroundColor:'white'}} onClick={openX}>
               <X />
             </IconButton>
-            <IconButton size="large" edge="start" color="#c9c7b8" aria-label="menu" sx={{ mr: 2 ,backgroundColor:'white'}} onClick={openFacebook}>
+            <IconButton size="large" edge="start" color="#c9c7b8" aria-label="menu" sx={{ mr: 4 ,backgroundColor:'white'}} onClick={openFacebook}>
               <Facebook />
+            </IconButton>
+            <IconButton size="large" edge="start" color="#c9c7b8" aria-label="record voice" sx={{ mr: 2, backgroundColor: 'white' }} onClick={speakAltText}>
+              <RecordVoiceOverIcon />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -149,6 +202,10 @@ export default function Home() {
             <Button href="#about" title="About Us" sx={{ color: 'white' }}>About Us</Button>
             <Button href="#features" title="Features" sx={{ color: 'white' }}>Features</Button>
             <Button href="#contact" title="Contact Us" sx={{ color: 'white' }}>Contact Us</Button>
+            <Button onClick={() => navigate('/dashboard')} title="Dashboard" sx={{ color: 'white' }}>
+  Dashboard
+</Button>
+
           </Box>
         </AppBar>
       </Box>
@@ -163,19 +220,19 @@ export default function Home() {
 
    
       {/* Live Data Feed Section */}
-      <Box id="latest" sx={{ backgroundColor: 'black', padding: '2%' }}>
-        <Typography variant="h3" sx={{ marginBottom: '1%', textAlign: 'center', fontFamily: 'Atteron', color: 'white' }}>
+      <button onClick={sendEarthquakeAlert}>Send Earthquake Alert</button>
+
+      {/* Notification Container */}
+      <NotificationContainer />
+      <Box id="latest" sx={{ backgroundColor: 'white', padding: '2%' }}>
+        <Typography variant="h3" sx={{ marginBottom: '1%', textAlign: 'center', fontFamily: 'Atteron', color: 'black' }}>
           ..... Live Data Feed .....
         </Typography>
-        <Typography variant="body2" sx={{ color: 'white', textAlign: 'center' }}>
+        <Typography variant="body2" sx={{ color: 'black', textAlign: 'center' }}>
           Get the latest real-time updates on weather, seismic activities, and other disaster events from across the globe.
         </Typography>
         <br />
-        <Button fullWidth sx={{ backgroundColor: '#dee2d4', padding: '2%', color: 'black' }}>
-          <Button variant="body2" sx={{ textAlign: 'center', fontFamily: 'Anahaw' }} onClick={goTonext}>
-            Explore Real-Time Data
-          </Button>
-        </Button>
+<Newfile/>
       </Box>
             {/* Features Section */}
             <Box sx={{  padding: '5%' ,background: 'linear-gradient(to right, black, white)',  }}>
@@ -315,20 +372,26 @@ export default function Home() {
 </Box>
 
       {/* Contact Us Section */}
-      <Box id="contact" sx={{ backgroundColor: 'white' }}>
-        <footer className="footer">
-          <Box sx={{ justifyContent: 'left', textAlign: 'left', marginLeft: '25px' }}>
-            <Typography variant="h4">Contact Us</Typography>
-            <Typography variant="body1">Email: support@disasterwatch.com</Typography>
-            <Typography variant="body1">Phone: +123-456-7890</Typography>
-            <Typography variant="body1">Address: 123 Emergency Road, Disaster City</Typography>
-          </Box>
-        </footer>
-        <Box sx={{ marginTop: 6 }}>
-          <Typography variant="body2">&copy; 2024 DisasterWatch. All rights reserved.</Typography>
-          <br />
-        </Box>
-      </Box>
+      <Box id="contact" sx={{ backgroundColor: '#f4f4f4', padding: '4%', display: 'flex', justifyContent: 'flex-start' }}>
+  <Box sx={{ maxWidth: '500px', marginLeft: '25px' }}>
+    <Typography variant="h4" sx={{ marginBottom: '2%', textAlign: 'left', fontFamily: 'Atteron', fontWeight: 'bold' }}>
+      Contact Us
+    </Typography>
+    <Paper sx={{ display: 'flex', alignItems: 'center', padding: '10px', marginBottom: '10px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+      <EmailIcon sx={{ marginRight: '10px', color: '#3f51b5' }} />
+      <Typography variant="body1">Email: support@disasterwatch.com</Typography>
+    </Paper>
+    <Paper sx={{ display: 'flex', alignItems: 'center', padding: '10px', marginBottom: '10px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+      <PhoneIcon sx={{ marginRight: '10px', color: '#3f51b5' }} />
+      <Typography variant="body1">Phone: +123-456-7890</Typography>
+    </Paper>
+    <Paper sx={{ display: 'flex', alignItems: 'center', padding: '10px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+      <LocationOnIcon sx={{ marginRight: '10px', color: '#3f51b5' }} />
+      <Typography variant="body1">Address: 123 Emergency Road, Disaster City</Typography>
+    </Paper>
+  </Box>
+</Box>
+
     </div>
   );
-}
+} 
